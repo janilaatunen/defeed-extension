@@ -1,0 +1,18 @@
+:root {
+  --bg: #defeed;
+  --fg: #0f3d3a;
+}
+
+body {
+  margin: 0;
+  padding: 16px;
+  min-width: 240px;
+  font: 14px/1.4 system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}

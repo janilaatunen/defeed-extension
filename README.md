@@ -44,10 +44,24 @@ Settings sync between desktops through Firefox Sync (`storage.sync`).
 - **Blocking Shorts links:** a network rule catches full page loads, and a content script catches navigation inside YouTube's single-page app.
 - **Stack:** [WXT](https://wxt.dev) (a framework that builds one codebase for Firefox and Chrome) + TypeScript, Manifest V3.
 
-## Project layout (planned)
+## Develop
+
+```bash
+npm install            # also runs `wxt prepare` (generates .wxt/ types)
+npm run dev            # Chrome with the extension loaded, hot reload
+npm run dev:firefox    # same in Firefox
+npm run compile        # type check
+npm run build          # production build → .output/chrome-mv3
+npm run build:firefox  # → .output/firefox-mv3
+npm run zip:firefox    # zip for AMO signing
+```
+
+Load a build by hand: Firefox `about:debugging` → This Firefox → Load Temporary Add-on → pick `.output/firefox-mv3/manifest.json`. Chrome `chrome://extensions` → Developer mode → Load unpacked → `.output/chrome-mv3`.
+
+## Project layout
 
 ```
-entrypoints/   content scripts, background script, popup
+entrypoints/   content scripts, background script, popup (exists, stubs)
 sites/<site>/  per-site feature list + CSS selectors
 lib/           settings storage and shared feature logic
 assets/        icon source (icon.svg)
