@@ -20,7 +20,7 @@ My own browser extension that hides the distracting parts of websites: Shorts, h
 | Hide comments | Built, untested live |
 | Autoplay off: switches YouTube's toggle off once, hides end screen and end cards | Built, untested live |
 | Hide related videos next to the player (playlist and live chat stay) | Built, untested live |
-| Block direct `/shorts/` links | Not built |
+| Block Shorts links (direct load, link click, in-app navigation, channel Shorts tabs) → "Shorts blocked" page | Built, untested live |
 | Popup with a toggle per feature + master switch | Not built (settings exist, no UI) |
 
 Each feature works on desktop (`www.youtube.com`) and mobile (`m.youtube.com`).
@@ -56,7 +56,7 @@ npm run zip:firefox    # zip to upload to AMO for signing
 ## How it works
 
 - **Hiding:** for each feature that's on, the extension puts an attribute on the page's `<html>` element (for example `data-defeed-comments`). The site's CSS file hides elements only while that attribute is there. CSS applies instantly and keeps working as YouTube redraws the page.
-- **What CSS can't do:** a small script handles two things. It finds the desktop "Shorts" filter chip by its text, and it clicks the autoplay toggle off. This is the **content script**, code the extension runs inside the YouTube page: `entrypoints/youtube.content.ts`.
+- **What CSS can't do:** a small script handles three things. It finds the desktop "Shorts" filter chip by its text, clicks the autoplay toggle off, and sends any Shorts URL to the extension's "Shorts blocked" page (`entrypoints/blocked/`). This is the **content script**, code the extension runs inside the YouTube page: `entrypoints/youtube.content.ts`.
 - **Settings:** one object holds a master on/off switch plus on/off per feature. It's saved to `storage.sync`, the browser's synced extension storage. A feature added in a later version starts at its default.
 - **Stack:** [WXT](https://wxt.dev), a framework that builds one codebase for Firefox and Chrome, with TypeScript. **MV3** (Manifest V3) is the current extension format both browsers use.
 
@@ -65,8 +65,9 @@ npm run zip:firefox    # zip to upload to AMO for signing
 ```
 sites/youtube/features.ts   feature list: id, label, default
 sites/youtube/youtube.css   the hiding rules (selectors)
+sites/youtube/shorts.ts     which URLs count as Shorts
 sites/index.ts              list of all sites
-entrypoints/                content script, background script, popup (stub)
+entrypoints/                content script, Shorts blocked page, background script, popup (stub)
 lib/                        settings storage and attribute logic
 assets/icon.svg             icon source; PNGs in public/icon/ are exported from it
 ```

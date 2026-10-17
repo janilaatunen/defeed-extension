@@ -5,6 +5,13 @@ export default defineConfig({
   manifest: {
     name: 'Defeed',
     permissions: ['storage'],
+    // The Shorts block page must be reachable from YouTube for the content script to navigate to it.
+    web_accessible_resources: [
+      {
+        resources: ['blocked.html'],
+        matches: ['*://www.youtube.com/*', '*://m.youtube.com/*'],
+      },
+    ],
     browser_specific_settings: {
       gecko: {
         id: 'defeed@laatunen.fi',
