@@ -51,6 +51,7 @@ npm install            # also runs `wxt prepare` (generates .wxt/ types)
 npm run dev            # Chrome with the extension loaded, hot reload
 npm run dev:firefox    # same in Firefox
 npm run compile        # type check
+npm test               # unit tests (Vitest)
 npm run build          # production build → .output/chrome-mv3
 npm run build:firefox  # → .output/firefox-mv3
 npm run zip:firefox    # zip for AMO signing
@@ -61,12 +62,17 @@ Load a build by hand: Firefox `about:debugging` → This Firefox → Load Tempor
 ## Project layout
 
 ```
-entrypoints/   content scripts, background script, popup (exists, stubs)
-sites/<site>/  per-site feature list + CSS selectors
-lib/           settings storage and shared feature logic
+entrypoints/   content scripts, background script, popup (stubs for now)
+sites/<site>/  per-site feature list (ids, labels, defaults) + CSS selectors
+sites/index.ts the list of all sites
+lib/           settings storage (synced) and shared feature types
 assets/        icon source (icon.svg)
 public/icon/   exported icon PNGs (16–128 px)
 ```
+
+## Settings
+
+One synced object: a master on/off switch, plus on/off per feature per site. Every feature defaults to on. A feature added in a later version starts at its default, and a removed one is dropped. Feature ids are the storage keys, so never rename one.
 
 ## Icon
 

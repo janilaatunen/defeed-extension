@@ -7,12 +7,13 @@ Defeed: cross-browser (Firefox, Zen, Firefox Android, Chrome) MV3 extension that
 Run after every change:
 
 ```bash
-npm run compile && npm run build && npm run build:firefox
+npm run compile && npm test && npm run build && npm run build:firefox
 ```
 
 ## Rules
 
-- Keep one folder per site under `sites/<site>/`; never put site-specific selectors elsewhere.
+- Keep one folder per site under `sites/<site>/` and register it in `sites/index.ts`; never put site-specific selectors elsewhere.
+- Never rename a feature `id` in `sites/*/features.ts`; it is the stored settings key.
 - Hide elements with CSS keyed off `html[data-defeed-<feature>]`; use JS (MutationObserver) only where CSS cannot match.
 - Prefer custom element tag names (`ytd-*`, `ytm-*`) over class names in selectors.
 - Cover desktop (`www.youtube.com`) and mobile (`m.youtube.com`) selectors for every YouTube feature.
