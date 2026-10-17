@@ -70,6 +70,10 @@ assets/        icon source (icon.svg)
 public/icon/   exported icon PNGs (16–128 px)
 ```
 
+## Status of the YouTube rules
+
+The hiding rules live in `sites/youtube/youtube.css`, and the two jobs CSS can't do (desktop Shorts filter chips, switching autoplay off) are in `entrypoints/youtube.content.ts`. **They haven't been checked against live YouTube yet.** They're written from two maintained sources: [Remove YouTube Suggestions](https://github.com/lawrencehook/remove-youtube-suggestions) (MPL-2.0, used as a reference, not copied) and [ublock-hide-yt-shorts](https://github.com/gijsdev/ublock-hide-yt-shorts). Blocking direct Shorts links isn't built yet.
+
 ## Settings
 
 One synced object: a master on/off switch, plus on/off per feature per site. Every feature defaults to on. A feature added in a later version starts at its default, and a removed one is dropped. Feature ids are the storage keys, so never rename one.
