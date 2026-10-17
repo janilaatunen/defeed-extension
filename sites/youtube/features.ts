@@ -9,6 +9,6 @@ export const youtube = {
     { id: 'homeFeed', label: 'Hide home feed', default: true },
     { id: 'comments', label: 'Hide comments', default: true },
     { id: 'autoplay', label: 'Disable autoplay', default: true },
-    { id: 'sidebar', label: 'Hide watch-page sidebar', default: true },
+    { id: 'sidebar', label: 'Hide related videos', default: true },
   ],
 } satisfies Site;

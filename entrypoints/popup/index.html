@@ -7,8 +7,14 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <h1>Defeed</h1>
-    <p>Feature toggles land here.</p>
+    <header>
+      <img src="/icon/32.png" width="24" height="24" alt="" />
+      <h1 id="title">Defeed</h1>
+      <label class="switch" title="Turn Defeed on or off everywhere">
+        <input id="enabled" type="checkbox" role="switch" aria-labelledby="title" />
+      </label>
+    </header>
+    <main id="sites"></main>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>

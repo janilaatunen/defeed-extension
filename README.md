@@ -6,7 +6,7 @@ My own browser extension that hides the distracting parts of websites: Shorts, h
 
 ## Short version
 
-- **Status:** pre-alpha. YouTube hiding is built but not yet tested on the live site. No popup yet, everything is on by default.
+- **Status:** pre-alpha. YouTube hiding is built but not yet tested on the live site. Everything is on by default; change it from the toolbar popup.
 - **Try it:** `npm install && npm run dev:firefox` opens Firefox with the extension loaded.
 - **Before committing:** `npm run compile && npm test && npm run build && npm run build:firefox`
 - **Fix a broken rule:** edit `sites/youtube/youtube.css`.
@@ -21,7 +21,7 @@ My own browser extension that hides the distracting parts of websites: Shorts, h
 | Autoplay off: switches YouTube's toggle off once, hides end screen and end cards | Built, untested live |
 | Hide related videos next to the player (playlist and live chat stay) | Built, untested live |
 | Block Shorts links (direct load, link click, in-app navigation, channel Shorts tabs) → "Shorts blocked" page | Built, untested live |
-| Popup with a toggle per feature + master switch | Not built (settings exist, no UI) |
+| Popup: a switch per feature + master on/off, follows light/dark mode | Built |
 
 Each feature works on desktop (`www.youtube.com`) and mobile (`m.youtube.com`).
 
@@ -67,7 +67,7 @@ sites/youtube/features.ts   feature list: id, label, default
 sites/youtube/youtube.css   the hiding rules (selectors)
 sites/youtube/shorts.ts     which URLs count as Shorts
 sites/index.ts              list of all sites
-entrypoints/                content script, Shorts blocked page, background script, popup (stub)
+entrypoints/                content script, Shorts blocked page, popup, background script (stub)
 lib/                        settings storage and attribute logic
 assets/icon.svg             icon source; PNGs in public/icon/ are exported from it
 ```

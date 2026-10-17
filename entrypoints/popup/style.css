@@ -1,18 +1,135 @@
 :root {
   --bg: #defeed;
   --fg: #0f3d3a;
+  --muted: #3f6b67;
+  --line: #b5e6da;
+  --track-off: #5f8f88;
+  --track-on: #0f3d3a;
+  --thumb: #ffffff;
+  --focus: #0f3d3a;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1f1e;
+    --fg: #defeed;
+    --muted: #9fc7c0;
+    --line: #234240;
+    --track-off: #5f8580;
+    --track-on: #defeed;
+    --thumb: #0f1f1e;
+    --focus: #defeed;
+  }
 }
 
 body {
   margin: 0;
-  padding: 16px;
-  min-width: 240px;
+  width: 100%;
+  min-width: 280px;
+  max-width: 480px;
   font: 14px/1.4 system-ui, sans-serif;
   background: var(--bg);
   color: var(--fg);
 }
 
+header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
 h1 {
-  margin: 0 0 8px;
+  flex: 1;
+  margin: 0;
   font-size: 16px;
+}
+
+main {
+  padding: 4px 16px 12px;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+fieldset:disabled .row {
+  opacity: 0.45;
+}
+
+legend {
+  padding: 12px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 40px;
+  cursor: pointer;
+}
+
+fieldset:disabled .row {
+  cursor: default;
+}
+
+/* Switch: a styled native checkbox */
+input[role='switch'] {
+  appearance: none;
+  flex: none;
+  position: relative;
+  width: 36px;
+  height: 20px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--track-off);
+  cursor: inherit;
+  transition: background-color 0.15s;
+}
+
+input[role='switch']::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--thumb);
+  transition: transform 0.15s;
+}
+
+input[role='switch']:checked {
+  background: var(--track-on);
+}
+
+input[role='switch']:checked::before {
+  transform: translateX(16px);
+}
+
+input[role='switch']:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.switch {
+  display: flex;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  input[role='switch'],
+  input[role='switch']::before {
+    transition: none;
+  }
 }
