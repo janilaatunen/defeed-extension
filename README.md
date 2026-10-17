@@ -2,82 +2,83 @@
 
 # Defeed
 
-A browser extension that hides the distracting parts of websites (feeds, Shorts, recommendations, comments) while leaving the parts you came for.
+My own browser extension that hides the distracting parts of websites: Shorts, home feeds, comments, autoplay, recommended videos. It replaces Unhook. YouTube first, Reddit and other sites later.
 
-**Status: pre-alpha.** Nothing to install yet. This README describes what the project will be.
+## Short version
 
-## Why
+- **Status:** pre-alpha. YouTube hiding is built but not yet tested on the live site. No popup yet, everything is on by default.
+- **Try it:** `npm install && npm run dev:firefox` opens Firefox with the extension loaded.
+- **Before committing:** `npm run compile && npm test && npm run build && npm run build:firefox`
+- **Fix a broken rule:** edit `sites/youtube/youtube.css`.
 
-Feed-blocking extensions like Unhook work, but they break whenever a site changes its markup and the fixes arrive slowly. Defeed is a small, self-maintained alternative: one codebase, every site's rules in one place, so a fix takes minutes.
+## What works
 
-## What it will do
+| Feature (YouTube) | State |
+|---|---|
+| Hide Shorts everywhere: shelves, tiles, nav, channel tab, filter chips | Built, untested live |
+| Hide home feed | Built, untested live |
+| Hide comments | Built, untested live |
+| Autoplay off: switches YouTube's toggle off once, hides end screen and end cards | Built, untested live |
+| Hide related videos next to the player (playlist and live chat stay) | Built, untested live |
+| Block direct `/shorts/` links | Not built |
+| Popup with a toggle per feature + master switch | Not built (settings exist, no UI) |
 
-One toggle per distraction, per site, plus a master on/off switch.
-
-### YouTube (first target, desktop and mobile)
-
-- **Shorts, everywhere:** the Shorts tab, Shorts shelves in home, search, subscriptions and channel pages, and Shorts filters.
-- **Shorts links blocked:** opening a `/shorts/` link shows a "blocked" page instead of playing it.
-- **Home feed hidden:** the home page stays empty, search still works.
-- **Comments hidden.**
-- **Autoplay off:** no autoplay and no end-screen video grid.
-- **Watch-page sidebar hidden:** no related videos next to the player.
-
-### Later
-
-Reddit, then other sites as they become a problem. Each site is its own folder of rules, so adding one doesn't touch the others.
+Each feature works on desktop (`www.youtube.com`) and mobile (`m.youtube.com`).
 
 ## Browsers
 
-| Browser | Plan |
+| Browser | How |
 |---|---|
-| Firefox (desktop) | Primary target |
-| Zen | Same build as Firefox |
-| Firefox for Android | Supported, includes `m.youtube.com` |
-| Chrome / Chromium | Same codebase, built separately |
+| Firefox desktop | Main target |
+| Zen | Same build as Firefox (Zen is Firefox underneath) |
+| Firefox for Android | Same build; needs signing first (see below) |
+| Chrome / Chromium | Separate build from the same code |
 
-Settings sync between desktops through Firefox Sync (`storage.sync`).
-
-## How it works (short version)
-
-- **Hiding:** each toggle sets an attribute on the page's `<html>` element, and a stylesheet hides the matching elements. Pure CSS, so nothing flickers and it keeps working as the site re-renders.
-- **Blocking Shorts links:** a network rule catches full page loads, and a content script catches navigation inside YouTube's single-page app.
-- **Stack:** [WXT](https://wxt.dev) (a framework that builds one codebase for Firefox and Chrome) + TypeScript, Manifest V3.
-
-## Develop
+## Cheat sheet
 
 ```bash
-npm install            # also runs `wxt prepare` (generates .wxt/ types)
-npm run dev            # Chrome with the extension loaded, hot reload
-npm run dev:firefox    # same in Firefox
-npm run compile        # type check
+npm install            # install; also generates .wxt/ (WXT's TypeScript types)
+npm run dev:firefox    # Firefox with the extension, reloads on save
+npm run dev            # same in Chrome
 npm test               # unit tests (Vitest)
-npm run build          # production build → .output/chrome-mv3
-npm run build:firefox  # → .output/firefox-mv3
-npm run zip:firefox    # zip for AMO signing
+npm run compile        # type check only
+npm run build:firefox  # build → .output/firefox-mv3
+npm run build          # build → .output/chrome-mv3
+npm run zip:firefox    # zip to upload to AMO for signing
 ```
 
-Load a build by hand: Firefox `about:debugging` → This Firefox → Load Temporary Add-on → pick `.output/firefox-mv3/manifest.json`. Chrome `chrome://extensions` → Developer mode → Load unpacked → `.output/chrome-mv3`.
+**Load a build by hand.**
+- **Firefox:** `about:debugging` → This Firefox → Load Temporary Add-on → `.output/firefox-mv3/manifest.json`. It's removed when Firefox restarts.
+- **Chrome:** `chrome://extensions` → Developer mode → Load unpacked → `.output/chrome-mv3`.
 
-## Project layout
+**Signing:** Firefox only keeps an extension installed for good if Mozilla has signed it. Signing happens through **AMO** (addons.mozilla.org, Mozilla's add-on site). An "unlisted" upload is signed without getting a public page. Not set up yet.
+
+## How it works
+
+- **Hiding:** for each feature that's on, the extension puts an attribute on the page's `<html>` element (for example `data-defeed-comments`). The site's CSS file hides elements only while that attribute is there. CSS applies instantly and keeps working as YouTube redraws the page.
+- **What CSS can't do:** a small script handles two things. It finds the desktop "Shorts" filter chip by its text, and it clicks the autoplay toggle off. This is the **content script**, code the extension runs inside the YouTube page: `entrypoints/youtube.content.ts`.
+- **Settings:** one object holds a master on/off switch plus on/off per feature. It's saved to `storage.sync`, the browser's synced extension storage. A feature added in a later version starts at its default.
+- **Stack:** [WXT](https://wxt.dev), a framework that builds one codebase for Firefox and Chrome, with TypeScript. **MV3** (Manifest V3) is the current extension format both browsers use.
+
+## Where things are
 
 ```
-entrypoints/   content scripts, background script, popup (stubs for now)
-sites/<site>/  per-site feature list (ids, labels, defaults) + CSS selectors
-sites/index.ts the list of all sites
-lib/           settings storage (synced) and shared feature types
-assets/        icon source (icon.svg)
-public/icon/   exported icon PNGs (16–128 px)
+sites/youtube/features.ts   feature list: id, label, default
+sites/youtube/youtube.css   the hiding rules (selectors)
+sites/index.ts              list of all sites
+entrypoints/                content script, background script, popup (stub)
+lib/                        settings storage and attribute logic
+assets/icon.svg             icon source; PNGs in public/icon/ are exported from it
 ```
 
-## Status of the YouTube rules
-
-The hiding rules live in `sites/youtube/youtube.css`, and the two jobs CSS can't do (desktop Shorts filter chips, switching autoplay off) are in `entrypoints/youtube.content.ts`. **They haven't been checked against live YouTube yet.** They're written from two maintained sources: [Remove YouTube Suggestions](https://github.com/lawrencehook/remove-youtube-suggestions) (MPL-2.0, used as a reference, not copied) and [ublock-hide-yt-shorts](https://github.com/gijsdev/ublock-hide-yt-shorts). Blocking direct Shorts links isn't built yet.
-
-## Settings
-
-One synced object: a master on/off switch, plus on/off per feature per site. Every feature defaults to on. A feature added in a later version starts at its default, and a removed one is dropped. Feature ids are the storage keys, so never rename one.
+**Add a site:** create `sites/<site>/` with `features.ts` and `<site>.css`, add it to `sites/index.ts`, then add an `entrypoints/<site>.content.ts` that matches the site's URLs.
 
 ## Icon
 
-`assets/icon.svg` is the source: a #DEFEED (pale mint) rounded square with three feed lines that fade away. The PNGs in `public/icon/` are exported from it.
+A #DEFEED (pale mint) rounded square with three feed lines that fade away.
+
+## Credits and license
+
+MIT, see [LICENSE](LICENSE). The selectors were written with these as reference, to keep up with YouTube's markup:
+- [ublock-hide-yt-shorts](https://github.com/gijsdev/ublock-hide-yt-shorts), MIT.
+- [Remove YouTube Suggestions](https://github.com/lawrencehook/remove-youtube-suggestions), MPL-2.0. Used as a reference only, no code copied.
